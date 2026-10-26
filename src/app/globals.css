@@ -1,0 +1,357 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
+    --primary: 5 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 5 100% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 96%;
+    --ring: 5 100% 60%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* FullCalendar light-theme overrides */
+.fc {
+  --fc-border-color: hsl(0 0% 90%);
+  --fc-button-bg-color: hsl(0 0% 96%);
+  --fc-button-border-color: hsl(0 0% 88%);
+  --fc-button-hover-bg-color: hsl(5 100% 60%);
+  --fc-button-hover-border-color: hsl(5 100% 50%);
+  --fc-button-active-bg-color: hsl(5 100% 55%);
+  --fc-button-active-border-color: hsl(5 100% 45%);
+  --fc-button-text-color: hsl(0 0% 9%);
+  --fc-today-bg-color: hsl(5 100% 60% / 0.08);
+  --fc-page-bg-color: hsl(0 0% 98%);
+  --fc-neutral-bg-color: hsl(0 0% 100%);
+  --fc-neutral-text-color: hsl(0 0% 9%);
+  --fc-list-event-hover-bg-color: hsl(0 0% 96%);
+  --fc-highlight-color: hsl(5 100% 60% / 0.15);
+}
+
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number,
+.fc .fc-list-day-cushion {
+  color: hsl(0 0% 35%);
+  text-decoration: none;
+}
+
+.fc .fc-daygrid-day-number:hover,
+.fc .fc-col-header-cell-cushion:hover {
+  color: hsl(0 0% 9%);
+}
+
+.fc .fc-toolbar-title {
+  color: hsl(0 0% 9%);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.fc .fc-button {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: all 0.15s;
+  text-transform: capitalize;
+}
+
+.fc .fc-button:focus {
+  box-shadow: 0 0 0 2px hsl(5 100% 60% / 0.4);
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  background-color: hsl(5 100% 55%);
+  border-color: hsl(5 100% 45%);
+  color: #ffffff;
+}
+
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  background-color: hsl(5 100% 60%);
+  color: white;
+  border-radius: 50%;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fc .fc-event {
+  border-radius: 4px;
+  border: none !important;
+  padding: 1px 4px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: filter 0.1s;
+}
+
+/* Hovered events darken slightly so they pop on white. Prep tiles are
+   excluded — they're derived, non-interactive, so no hover affordance. */
+.fc .fc-event:not(.fc-bg-event):not(.past-stream):not(.prep-event):hover {
+  filter: brightness(0.95);
+}
+
+/* Booked-shift events fill the full cell width — eliminate the right gutter
+   FullCalendar reserves for event stacking */
+.fc-timegrid-event-harness,
+.fc-timegrid-event-harness-inset {
+  inset-inline-start: 0 !important;
+  inset-inline-end: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin: 0 !important;
+}
+
+.fc-timegrid-col-events {
+  margin: 0 !important;
+}
+
+.fc-timegrid-event {
+  width: 100% !important;
+}
+
+.fc .fc-timegrid-slot {
+  height: 2.5rem;
+}
+
+.fc .fc-list-event td {
+  border-color: hsl(0 0% 90%);
+}
+
+.fc .fc-scrollgrid {
+  border-color: hsl(0 0% 90%);
+}
+
+.fc .fc-scrollgrid-section > * {
+  border-color: hsl(0 0% 90%);
+}
+
+.fc td, .fc th {
+  border-color: hsl(0 0% 90%);
+}
+
+.fc .fc-more-popover {
+  background: hsl(0 0% 100%);
+  border-color: hsl(0 0% 88%);
+}
+
+.fc .fc-more-popover .fc-popover-header {
+  background: hsl(0 0% 96%);
+  color: hsl(0 0% 9%);
+}
+
+.fc .fc-daygrid-more-link {
+  color: hsl(5 100% 60%);
+}
+
+.fc .fc-list-day-cushion {
+  background-color: hsl(0 0% 96%);
+}
+
+.fc-theme-standard .fc-list-day-cushion {
+  background-color: hsl(0 0% 96%);
+}
+
+/* Background events stay non-interactive (FC doesn't fire eventClick on
+   them anyway). Clicks pass through to the underlying cell's dateClick.
+   Force full opacity — FC defaults bg events to ~0.3, which would fade
+   the orange rate-pill we render inside them. */
+.fc .fc-bg-event {
+  transition: background-color 80ms ease-out;
+  opacity: 1 !important;
+}
+
+/* Bookable shift cells: pure white */
+.fc .fc-timegrid-col,
+.fc .fc-timegrid-col-frame {
+  background-color: #ffffff;
+}
+
+/* Time-grid: today's column gets no tint (the orange "now" line marks it).
+   Month view keeps FC's default highlight since there's no now-line there. */
+.fc .fc-timegrid-col.fc-day-today {
+  background-color: #ffffff !important;
+}
+
+/* Month view: past days are dimmed for visual hierarchy. Today is left with
+   FC's default tint since there's no now-line marker in this view. */
+.fc .fc-daygrid-day.past-day {
+  background-color: #f1f1f1;
+}
+.fc .fc-daygrid-day.past-day .fc-daygrid-day-events .fc-event {
+  opacity: 0.7;
+}
+
+/* Month-view event pills: tight orange pill, no harness inset weirdness */
+.fc-daygrid-event {
+  background-color: #FF4433 !important;
+  border-color: #E03A2C !important;
+  border-radius: 4px !important;
+  padding: 0 !important;
+  margin-bottom: 2px !important;
+}
+.fc-daygrid-event .fc-event-time,
+.fc-daygrid-event .fc-event-title {
+  color: #ffffff !important;
+}
+/* Hide the default time prefix in month pills — title already says everything */
+.fc-daygrid-event .fc-event-time { display: none; }
+
+/* Past cells: faint diagonal stripe pattern reads as "history" without a
+   heavy color shift — works against the white grid. */
+.fc .fc-bg-event.past-cell {
+  background-color: transparent !important;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0,
+    transparent 8px,
+    rgba(0, 0, 0, 0.04) 8px,
+    rgba(0, 0, 0, 0.04) 14px
+  ) !important;
+  border-bottom: 1px solid hsl(0 0% 82%) !important;
+  opacity: 1 !important;
+}
+
+/* Group Selection highlight must survive past-cell's transparent !important
+   background — selected past cells show the red tint over the stripes. */
+.fc .fc-bg-event.selected-cell {
+  background-color: rgba(255, 68, 51, 0.32) !important;
+}
+
+/* Past booked shifts: lighter desaturated peach reads as "completed" on white. */
+.past-stream {
+  background-color: #F5B3A8 !important;
+  border-color: #E89E91 !important;
+  opacity: 1;
+}
+
+/* Moderator prep blocks (derived, non-interactive): keep the "arrive early"
+   blue distinct from live/booked orange at all times. Elapsed prep dims to a
+   desaturated blue (never the past-stream peach — a prep tile is "past" the
+   moment its session STARTS, so most visible prep would otherwise lose the
+   blue-vs-live distinction the feature exists for). */
+.fc .fc-event.prep-event {
+  cursor: default;
+}
+.fc .fc-event.prep-event:hover {
+  filter: none;
+}
+.prep-event.past-prep {
+  background-color: #93C5FD !important;
+  border-color: #60A5FA !important;
+  opacity: 1;
+}
+
+/* "Before open" prep marker: a prep window that falls before the brand's
+   grid start (the common first-of-day case) can't sit at its true time, so
+   it's clamped to the first slot and flagged with a left border + dashed
+   edge so the moderator still sees prep exists without misreading the time. */
+.prep-event.prep-before-open {
+  border-left: 3px solid #1D4ED8 !important;
+  border-style: dashed !important;
+  opacity: 0.85;
+}
+
+/* Booked shift with a pending cancellation request from the host: subtle
+   dashed outline so the tile reads "in flight" without losing the orange
+   booked appearance. The shift is still booked until admin acts. */
+.fc .fc-event.pending-cancel {
+  outline: 2px dashed hsl(0 0% 35% / 0.55);
+  outline-offset: -3px;
+  opacity: 0.92;
+}
+
+/* Mobile (≤767px): hosts are the primary mobile audience and need each day
+   column wide enough to read shift details. The previous pass enlarged the
+   FC buttons to 40px tap targets, which was overkill — they ate vertical
+   space without buying real legibility. This pass tightens buttons, narrows
+   the time axis (was eating ~20% of width with "9 AM – 10 AM"), and lets
+   the 7 day columns grow into the reclaimed space. */
+@media (max-width: 767px) {
+  .fc .fc-toolbar.fc-header-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    margin-bottom: 0.5rem;
+  }
+  .fc .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .fc .fc-toolbar-title {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  /* Smaller, denser buttons. 32px is still tap-friendly per WCAG (≥24px)
+     and well above the iOS/Android comfortable-tap floor. */
+  .fc .fc-button {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.55rem;
+    min-height: 32px;
+  }
+  .fc .fc-timegrid-slot {
+    height: 3rem;
+  }
+  /* Narrow time axis — CalendarView's renderSlotLabel switches to start-only
+     short form ("9a", "12p") on mobile. Reserve just enough width for the
+     widest label ("12:30p" ≈ 36px) plus a hair of padding. */
+  .fc .fc-timegrid-axis-cushion,
+  .fc .fc-timegrid-slot-label-cushion {
+    font-size: 0.65rem;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+  .fc .fc-timegrid-axis-frame,
+  .fc .fc-timegrid-slot-label-frame {
+    min-width: 0;
+  }
+  .fc .fc-timegrid-axis,
+  .fc .fc-timegrid-slot-label {
+    width: 38px !important;
+    min-width: 38px;
+  }
+  /* Day column headers (Mon 25, Tue 26, ...) — compact font + tighter pad
+     so they don't push the grid down. */
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.15rem;
+  }
+  .fc .fc-event {
+    font-size: 0.75rem;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

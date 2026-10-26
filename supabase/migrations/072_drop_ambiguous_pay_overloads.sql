@@ -1,0 +1,108 @@
+-- 072_drop_ambiguous_pay_overloads.sql
+--
+-- >>> URGENT: THIS FIXES A LIVE OUTAGE. Apply it now. SQL only, no deploy. <<<
+--
+-- SYMPTOM: /my-shifts returns a server error for every user. Hosts are
+-- redirected to /my-shifts on sign-in, so every host is locked out of the app.
+-- Reported as "hosts are getting an error trying to access the scheduler".
+--
+-- THE ERROR:
+--   Could not choose the best candidate function between:
+--     public.get_my_stream_pay(),
+--     public.get_my_stream_pay(p_from => timestamptz, p_to => timestamptz)
+--
+-- CAUSE, and it is my mistake in migration 068.
+--
+-- 068 added windowed versions of the two pay accessors with DEFAULT NULL
+-- arguments, reasoning that defaults make the migration safe to apply before or
+-- after the code deploy because a no-argument call still resolves. That is true
+-- of a REPLACED function. It is false when a second function is CREATED
+-- alongside the first: changing the argument list makes a NEW function, so
+-- `CREATE OR REPLACE FUNCTION f(a, b)` did not replace `f()` -- it added an
+-- overload next to it.
+--
+-- Postgres then has two candidates for `f()`: the zero-argument version, and
+-- the two-argument version with both arguments defaulted. Neither is more
+-- specific, so it refuses to choose and raises rather than guessing.
+--
+-- 068's own rollback note spotted half of this -- "drop the two-argument
+-- overloads, which CREATE OR REPLACE will NOT remove because the signature
+-- differs" -- and I did not follow the thought through to what having both at
+-- once would do to a no-argument call.
+--
+-- WHY IT SURFACED ON /my-shifts AND NOWHERE ELSE: every admin_stream_pay call
+-- site was changed to pass a window, so those resolve unambiguously to the
+-- two-argument version. /my-shifts deliberately calls get_my_stream_pay() with
+-- NO arguments, because that page renders all-time earnings and a windowed pay
+-- map would silently re-price a worker's own history at their current rate.
+-- That deliberate no-argument call is the one thing the ambiguity breaks.
+--
+-- THE FIX: drop the zero-argument versions. The two-argument versions default
+-- both arguments to NULL, and NULL means "no bound", so `f()` behaves exactly
+-- as the zero-argument version did -- it just becomes the only candidate.
+--
+-- WHAT THIS DOES NOT CHANGE: no predicate, no permission, no returned row.
+-- The surviving functions are the ones migration 068 already installed and
+-- which every windowed caller has been using successfully. Removing the
+-- shadowed duplicates cannot alter their behaviour.
+--
+-- APPLY ORDER: after 068. Nothing depends on it. Safe to re-run (IF EXISTS).
+--
+-- ROLLBACK: none wanted -- restoring the zero-argument overloads restores the
+-- outage. If you must, re-run migration 064.
+
+-- Signature-qualified, so ONLY the zero-argument versions are dropped and the
+-- windowed ones migration 068 installed are untouched.
+DROP FUNCTION IF EXISTS public.get_my_stream_pay();
+DROP FUNCTION IF EXISTS public.admin_stream_pay();
+
+-- admin_stream_pay had no live no-argument caller left, so it was not erroring
+-- yet -- but the same ambiguity was sitting there waiting for the next
+-- unwindowed call. Removed for the same reason.
+
+NOTIFY pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- VERIFY IMMEDIATELY
+-- ---------------------------------------------------------------------------
+--
+-- (a) Exactly ONE version of each remains, and it is the windowed one:
+--
+--       SELECT p.proname, pg_get_function_identity_arguments(p.oid) AS args
+--         FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+--        WHERE n.nspname = 'public'
+--          AND p.proname IN ('get_my_stream_pay', 'admin_stream_pay')
+--        ORDER BY p.proname;
+--
+--     Expect exactly 2 rows, both showing
+--     "p_from timestamp with time zone, p_to timestamp with time zone".
+--     Any row with empty args means the DROP did not take.
+--
+-- (b) The no-argument call works again -- this is the outage check. Run as a
+--     real host; expect rows (or 0 rows for a host with no shifts), NOT an
+--     "ambiguous function" error:
+--
+--       BEGIN;
+--         SET LOCAL ROLE authenticated;
+--         SET LOCAL request.jwt.claims = '{"sub":"<A REAL HOST user_id>","role":"authenticated"}';
+--         SELECT count(*) FROM public.get_my_stream_pay();
+--       ROLLBACK;
+--
+-- (c) The windowed call still works and still filters:
+--
+--       SELECT count(*) AS all_rows   FROM public.admin_stream_pay();
+--       SELECT count(*) AS windowed   FROM public.admin_stream_pay(
+--         '2026-08-01T00:00:00Z', '2026-09-01T00:00:00Z');
+--       -- windowed must be smaller; all_rows must equal count(*) from streams
+--
+-- (d) IN THE APP: open /my-shifts as a host. It must load. That is the fix.
+--
+-- ---------------------------------------------------------------------------
+-- LESSON, recorded so this shape of mistake is catchable next time
+-- ---------------------------------------------------------------------------
+-- Adding DEFAULT arguments to an existing function via CREATE OR REPLACE does
+-- not replace it -- it creates an overload, and a call that omits those
+-- arguments then matches BOTH and fails. Whenever a migration changes a
+-- function's argument list, it must DROP the old signature explicitly in the
+-- same file, and the verify step must assert the expected NUMBER of overloads,
+-- not merely that the new one exists.

@@ -1,0 +1,5 @@
+# Vitest unit-test files. Next.js's strict lint flags fixtures, intentionally
+# unused declarations, and other test patterns that are fine for `npm test`
+# but break `next build`. Linting these belongs to Vitest itself.
+src/**/*.test.ts
+src/**/*.test.tsx
