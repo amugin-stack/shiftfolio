@@ -24,4 +24,4 @@ Chrome Network inspection after a reload and Schedule/Payroll/Team navigation sh
 
 ## Published release
 
-The initial release commit `888a0a6ffda502c669f2f8aca936d85ea116faa9` matched GitHub exactly and passed [all CI steps](https://github.com/amugin-stack/shiftfolio/actions/runs/37787110127), including clean dependency installation, privacy scan, lint, the test suite, isolated PostgreSQL integration, and production build. The browser also confirmed `/calendar` displays Not found. The final CSV download was parsed as six records, six actual CRLF separators, and total projected pay of $3,276.00.
+The initial release commit `7daad2803dd2cc19fd122192a9f77220c041d773` matched GitHub exactly and passed [all CI steps](https://github.com/amugin-stack/shiftfolio/actions/runs/40249972376), including clean dependency installation, privacy scan, lint, the test suite, isolated PostgreSQL integration, and production build. The browser also confirmed `/calendar` displays Not found. The final CSV download was parsed as six records, six actual CRLF separators, and total projected pay of $3,276.00.
